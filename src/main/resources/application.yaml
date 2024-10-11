@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: boot-lite
+
+server:
+  port: 8088
+  shutdown: graceful
