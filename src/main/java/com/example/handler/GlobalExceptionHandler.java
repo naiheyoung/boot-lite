@@ -1,17 +1,16 @@
-package space.breeze.handler;
+package com.example.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import space.breeze.exception.BusinessValidationException;
 
 import javax.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author naihe
@@ -20,19 +19,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"errInfo\": \"权限不足\"}");
-    }
-
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleArgumentValidException(MethodArgumentNotValidException e) {
         Map<String, String> errorMap = new HashMap<>();
         e.getBindingResult().getFieldErrors()
                 .forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errorMap);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMap);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -42,18 +35,12 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(BusinessValidationException.class)
-    public ResponseEntity<?> handleBusinessValidationException(BusinessValidationException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getErrors());
-    }
-
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    public Map<String, Object> handleException(Exception e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleException(RuntimeException e) {
         e.printStackTrace();
-        Map<String, Object> map = new HashMap<>();
-        map.put("errInfo", e.getMessage());
-        map.put("timestamp", System.currentTimeMillis());
-        return map;
+        Map<String, Object> errorMap = new HashMap<>();
+        errorMap.put("errInfo", e.getMessage());
+        errorMap.put("timestamp", System.currentTimeMillis());
+        return ResponseEntity.of(Optional.of(errorMap));
     }
 }

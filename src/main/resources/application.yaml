@@ -5,3 +5,5 @@ spring:
 server:
   port: 8088
   shutdown: graceful
+  servlet:
+    context-path: /api
