@@ -1,6 +1,6 @@
-package com.how.controller;
+package com.example.controller;
 
-import com.how.common.ApiResponse;
+import com.example.common.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +13,6 @@ public class InitController {
 
     @GetMapping({"/", "/init"})
     ApiResponse<String> init() {
-        return ApiResponse.success("the springboot server was started");
+        return ApiResponse.ok("the springboot server was started");
     }
 }
